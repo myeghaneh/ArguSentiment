@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.10"
 sentimentflow = {git = "https://github.com/dpicca/SentimentFlow"}
 en-core-web-sm = {url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1.tar.gz"}
+matplotlib = "^3.9.2"
 
 
 [tool.poetry.group.dev.dependencies]
