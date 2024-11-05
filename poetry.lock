@@ -1685,6 +1685,22 @@ tgrep = ["pyparsing"]
 twitter = ["twython"]
 
 [[package]]
+name = "NRCLex"
+version = "4.0"
+description = "An affect generator based on TextBlob and the NRC affect lexicon.  Note that lexicon license is for research purposes only."
+optional = false
+python-versions = ">=2.7"
+files = []
+develop = false
+
+[package.dependencies]
+textblob = "*"
+
+[package.source]
+type = "directory"
+url = "NRCLex"
+
+[[package]]
 name = "numba"
 version = "0.60.0"
 description = "compiling Python code using LLVM"
@@ -3314,6 +3330,25 @@ mpmath = ">=1.1.0,<1.4"
 dev = ["hypothesis (>=6.70.0)", "pytest (>=7.1.0)"]
 
 [[package]]
+name = "textblob"
+version = "0.18.0.post0"
+description = "Simple, Pythonic text processing. Sentiment analysis, part-of-speech tagging, noun phrase parsing, and more."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "textblob-0.18.0.post0-py3-none-any.whl", hash = "sha256:dd0c7ec4eb7b9346ec0a3f136a63eba13e0f59890d2a693d3d6aeb8371949dca"},
+    {file = "textblob-0.18.0.post0.tar.gz", hash = "sha256:8131c52c630bcdf61d04c359f939c98d5b836a01fba224d9e7ae22fc274e0ccb"},
+]
+
+[package.dependencies]
+nltk = ">=3.8"
+
+[package.extras]
+dev = ["pre-commit (>=3.5,<4.0)", "textblob[tests]", "tox"]
+docs = ["PyYAML (==6.0.1)", "sphinx (==7.2.6)", "sphinx-issues (==4.0.0)"]
+tests = ["numpy", "pytest"]
+
+[[package]]
 name = "thinc"
 version = "8.2.3"
 description = "A refreshing functional take on deep learning, compatible with your favorite libraries"
@@ -3879,4 +3914,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "cc61253478886d5807dc72d370a25c708a94206f087283affaf336875c665cb4"
+content-hash = "f1b63e9a507ac92d77291d25f67f46b2d537a8bbb3e8c09f6f67f887d0016ecf"
