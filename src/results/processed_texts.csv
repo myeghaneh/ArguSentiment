@@ -1,6 +1,6 @@
-text,SENSITIVITY#loathing,INTROSPECTION#ecstasy,TEMPER,SENSITIVITY#enthusiasm,POLARITY,TEMPER#serenity,INTROSPECTION,ATTITUDE,ATTITUDE#acceptance,ATTITUDE#delight
-Rent prices are already regulated in favour of tenants due to existing laws and the rent index.,-0.956,0.9495,0.0,0.877,0.003999999999999985,0.0,0.0,0.0,0.0,0.0
-"In view of the high prices for buying flats with existing rent contracts, these are an unattractive investment.",-0.965,0.979,0.0,0.0,-0.0462,0.2615,0.0,-0.659,0.0,0.0
-"Even if one might think that additional rent control is needed besides the current tenant protection,",-0.9659999999999999,0.89,-0.212,0.0,-0.21971428571428572,0.176,0.0,0.0,0.329,0.0
-one should not deny longstanding owners the opportunity to adjust their returns to market level.,-0.856,0.921,0.0,0.841,0.16188888888888886,0.31,-0.12875,-0.94,0.0,0.96
-A cap on rent increases upon tenant change is therefore not to be supported.,-0.9515,0.8714999999999999,0.0,0.999,0.185,0.0,0.0,0.0,0.0,0.0
+text,SENSITIVITY#loathing,INTROSPECTION#loathing,POLARITY,INTROSPECTION#ecstasy,TEMPER,SENSITIVITY#enthusiasm,INTROSPECTION#fear,ATTITUDE,ATTITUDE#joy,SENSITIVITY
+Tuition fees should not generally be charged by universities.,-0.856,-0.834,-0.8294999999999999,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+"Universities are for all citizens, independent of their finances.",0.0,0.0,0.829,0.867,0.0,0.0,0.0,0.0,0.0,0.0
+"Education and training are fundamental rights which the state, the society must provide.",0.0,0.0,0.47233333333333327,0.904,0.0,0.993,-0.503,-0.234,0.0,0.0
+"If a university lacks the funds, sponsors must be found.",0.0,0.0,0.6072,0.9343333333333333,0.0,0.0,0.0,-0.234,0.784,0.0
+Unfortunately this can lead to disagreeable dependencies in some cases.,0.0,-0.867,-0.15049999999999997,0.999,-0.329,0.0,0.0,0.0,0.0,-0.329
