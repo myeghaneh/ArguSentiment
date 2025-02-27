@@ -1,6 +1,8 @@
-text,SENSITIVITY#loathing,INTROSPECTION#loathing,POLARITY,INTROSPECTION#ecstasy,TEMPER,SENSITIVITY#enthusiasm,INTROSPECTION#fear,ATTITUDE,ATTITUDE#joy,SENSITIVITY
-Tuition fees should not generally be charged by universities.,-0.856,-0.834,-0.8294999999999999,0.0,0.0,0.0,0.0,0.0,0.0,0.0
-"Universities are for all citizens, independent of their finances.",0.0,0.0,0.829,0.867,0.0,0.0,0.0,0.0,0.0,0.0
-"Education and training are fundamental rights which the state, the society must provide.",0.0,0.0,0.47233333333333327,0.904,0.0,0.993,-0.503,-0.234,0.0,0.0
-"If a university lacks the funds, sponsors must be found.",0.0,0.0,0.6072,0.9343333333333333,0.0,0.0,0.0,-0.234,0.784,0.0
-Unfortunately this can lead to disagreeable dependencies in some cases.,0.0,-0.867,-0.15049999999999997,0.999,-0.329,0.0,0.0,0.0,0.0,-0.329
+text,INTROSPECTION,INTROSPECTION#ecstasy,POLARITY,ATTITUDE#acceptance,INTROSPECTION#dislike,ATTITUDE,INTROSPECTION#joy,TEMPER,SENSITIVITY#enthusiasm,SENSITIVITY#loathing,INTROSPECTION#loathing,TEMPER#calmness,INTROSPECTION#fear,TEMPER#bliss,SENSITIVITY#eagerness,TEMPER#serenity
+"Video games, namely FIFA in my case, can fascinate young people for hours more intensively and emotionally than any sport in the world!",-0.854,0.88225,0.49260000000000004,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+It would be fair to make them into an Olympic event.,0.0,0.876,0.578,0.329,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+"Perhaps it is less thrilling for a spectator than for the player,",0.0,0.917,0.48225,0.0,0.0,-0.246,0.659,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+"but also for contemporary Olympic events, I recall curling and 50km cross-country skiing, you have to be more than a freak to follow those more properly than only in the roundup of highlights.",0.0,0.903,0.22744444444444442,0.0,0.0,0.0,0.0,0.0,0.944,-0.84,-0.976,0.552,0.0,0.0,0.0,0.0
+"Plus the hurdle to make video games Olympic events is minimal,",-0.427,0.876,-0.19879999999999998,0.187,0.0,-0.259,0.0,0.0,0.0,0.0,-0.988,0.0,0.0,0.0,0.0,0.0
+"as you don't even need doping tests, only a neutral console.",0.0,0.0,0.0706,0.0,0.0,0.0,0.0,-0.4165,0.895,0.0,0.0,0.0,-0.649,0.894,0.0,0.0
+"And many a video game is physically and particularly mentally more demanding, when I think of the last FIFA tournament's final, than kicking a ball 20 metres.",0.0,0.961,0.01187499999999999,0.0,-0.274,0.0,0.0,-0.554,0.963,-0.995,0.0,0.0,0.0,0.0,0.558,0.238
