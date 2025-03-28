@@ -1,8 +1,6 @@
-text,INTROSPECTION,INTROSPECTION#ecstasy,POLARITY,ATTITUDE#acceptance,INTROSPECTION#dislike,ATTITUDE,INTROSPECTION#joy,TEMPER,SENSITIVITY#enthusiasm,SENSITIVITY#loathing,INTROSPECTION#loathing,TEMPER#calmness,INTROSPECTION#fear,TEMPER#bliss,SENSITIVITY#eagerness,TEMPER#serenity
-"Video games, namely FIFA in my case, can fascinate young people for hours more intensively and emotionally than any sport in the world!",-0.854,0.88225,0.49260000000000004,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
-It would be fair to make them into an Olympic event.,0.0,0.876,0.578,0.329,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
-"Perhaps it is less thrilling for a spectator than for the player,",0.0,0.917,0.48225,0.0,0.0,-0.246,0.659,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
-"but also for contemporary Olympic events, I recall curling and 50km cross-country skiing, you have to be more than a freak to follow those more properly than only in the roundup of highlights.",0.0,0.903,0.22744444444444442,0.0,0.0,0.0,0.0,0.0,0.944,-0.84,-0.976,0.552,0.0,0.0,0.0,0.0
-"Plus the hurdle to make video games Olympic events is minimal,",-0.427,0.876,-0.19879999999999998,0.187,0.0,-0.259,0.0,0.0,0.0,0.0,-0.988,0.0,0.0,0.0,0.0,0.0
-"as you don't even need doping tests, only a neutral console.",0.0,0.0,0.0706,0.0,0.0,0.0,0.0,-0.4165,0.895,0.0,0.0,0.0,-0.649,0.894,0.0,0.0
-"And many a video game is physically and particularly mentally more demanding, when I think of the last FIFA tournament's final, than kicking a ball 20 metres.",0.0,0.961,0.01187499999999999,0.0,-0.274,0.0,0.0,-0.554,0.963,-0.995,0.0,0.0,0.0,0.0,0.558,0.238
+text,INTROSPECTION#ecstasy,TEMPER,SENSITIVITY,ATTITUDE,TEMPER#calmness,POLARITY,INTROSPECTION#loathing,SENSITIVITY#enthusiasm,SENSITIVITY#loathing,SENSITIVITY#eagerness
+"Yes, it's annoying and cumbersome to separate your rubbish properly all the time.",0.856,-0.33,-0.275,-0.596,0.552,-0.078,0.0,0.0,0.0,0.0
+Three different bin bags stink away in the kitchen and have to be sorted into different wheelie bins.,0.961,0.0,0.0,-0.393,0.0,-0.09283333333333336,-0.828,0.948,0.0,0.0
+But still Germany produces way too much rubbish,0.825,0.0,0.0,-0.596,0.0,0.10550000000000004,0.0,0.0,0.0,0.0
+and too many resources are lost when what actually should be separated and recycled is burnt.,0.0,0.0,0.0,0.0,0.0,-0.2312,-0.899,0.918,-0.856,0.497
+We Berliners should take the chance and become pioneers in waste separation!,0.9195,0.0,0.0,-0.521,0.0,0.0935,0.0,0.0,-0.856,0.0
