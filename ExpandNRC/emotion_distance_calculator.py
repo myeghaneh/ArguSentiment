@@ -13,7 +13,7 @@ from sklearn.mixture import GaussianMixture
 from tqdm import tqdm
 from transformers import pipeline
 
-from .utils import _compute_similarity, create_emotion_vectors
+from ExpandNRC.utils import _compute_similarity, create_emotion_vectors
 
 
 class EmotionDistanceCalculator:
