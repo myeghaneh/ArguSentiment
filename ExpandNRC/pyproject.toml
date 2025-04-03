@@ -1,0 +1,12 @@
+[project]
+name = "ExpandNRC"
+version = "0.1.0"
+description = "Emotion lexicon expansion tools"
+authors = [{ name = "Panagiotis Ioannidis", email = "pioannidis@pisquared.io" }]
+dependencies = []
+readme = ""
+requires-python = ">=3.8"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
