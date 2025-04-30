@@ -22,7 +22,7 @@ class EmotionFrequencyCalculator:
         The similarity threshold for assigning emotions (default is 0.5).
     """
 
-    def __init__(self, lexicon, input=None, is_tokenized=False, threshold=0.5):
+    def __init__(self, lexicon, input=None, is_tokenized=False, threshold=0.5, device = "cpu"):
         self.text = ""
         self.words = []
         self.sentences = []
@@ -34,7 +34,7 @@ class EmotionFrequencyCalculator:
         self.__lexicon__ = lexicon
         self.threshold = threshold
 
-        self.distance_calculator = EmotionDistanceCalculator(lexicon)
+        self.distance_calculator = EmotionDistanceCalculator(lexicon, device = device)
 
         if input:
             if is_tokenized:
