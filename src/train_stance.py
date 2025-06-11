@@ -1,12 +1,15 @@
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
-from transformers import BertModel, BertTokenizer, AdamW, AutoModel, AutoTokenizer
+from transformers import AutoModel, AutoTokenizer, AdamW
 from sklearn.metrics import f1_score, precision_score, recall_score
 from tqdm import tqdm
-import os
+from itertools import chain
 
-# Dataset class
+
+# -----------------------------
+# Dataset
+# -----------------------------
 class StanceDataset(Dataset):
     def __init__(self, texts, stances, topics, tokenizer, max_len, extra_feats=None, sample_level=False):
         self.tokenizer = tokenizer
@@ -24,10 +27,10 @@ class StanceDataset(Dataset):
                         'extra_feat': feats_list[i] if feats_list is not None else None
                     })
         else:
-            for text, stance, topic, feat in zip(texts, stances, topics, extra_feats if extra_feats is not None else [None]*len(texts)):
+            for text, stance, topic, feat in zip(texts, stances, topics, extra_feats if extra_feats is not None else [None] * len(texts)):
                 self.samples.append({
                     'text': text,
-                    'stance': float(stance),
+                    'stance': stance,
                     'topic': topic,
                     'extra_feat': feat
                 })
@@ -58,32 +61,30 @@ class StanceDataset(Dataset):
         return {
             'input_ids': encoding['input_ids'].flatten(),
             'attention_mask': encoding['attention_mask'].flatten(),
-            'stance': torch.tensor(sample['stance'], dtype=torch.float),
+            'stance': torch.tensor(sample['stance']),
             'topic': torch.tensor(self.topic_vocab[sample['topic']], dtype=torch.long),
             'extra_feat': extra_feat
         }
 
-# Model class
+
+# -----------------------------
+# Model
+# -----------------------------
 class StanceClassifier(nn.Module):
-    def __init__(self, model_name='bert-base-uncased', extra_feat_dim=0):
+    def __init__(self, model_name='bert-base-uncased', extra_feat_dim=0, num_classes=2):
         super().__init__()
         self.bert = AutoModel.from_pretrained(model_name)
         self.extra_feat_dim = extra_feat_dim
 
-        if extra_feat_dim > 0:
-            self.classifier = nn.Sequential(
-                nn.Linear(self.bert.config.hidden_size + extra_feat_dim, 256),
-                nn.ReLU(),
-                nn.Dropout(0.1),
-                nn.Linear(256, 1)
-            )
-        else:
-            self.classifier = nn.Sequential(
-                nn.Linear(self.bert.config.hidden_size, 256),
-                nn.ReLU(),
-                nn.Dropout(0.1),
-                nn.Linear(256, 1)
-            )
+        hidden_size = self.bert.config.hidden_size
+        input_dim = hidden_size + extra_feat_dim
+
+        self.classifier = nn.Sequential(
+            nn.Linear(input_dim, 256),
+            nn.ReLU(),
+            nn.Dropout(0.1),
+            nn.Linear(256, num_classes)
+        )
 
     def forward(self, input_ids, attention_mask, extra_feats=None):
         outputs = self.bert(input_ids=input_ids, attention_mask=attention_mask)
@@ -96,8 +97,11 @@ class StanceClassifier(nn.Module):
 
         return self.classifier(x)
 
-# Evaluation function
-def evaluate_model(model, data_loader, device, loss_fn):
+
+# -----------------------------
+# Evaluation
+# -----------------------------
+def evaluate_model(model, data_loader, device, loss_fn, is_binary=True):
     model.eval()
     eval_loss = 0
     all_preds = []
@@ -107,33 +111,44 @@ def evaluate_model(model, data_loader, device, loss_fn):
         for batch in data_loader:
             input_ids = batch["input_ids"].to(device)
             attention_mask = batch["attention_mask"].to(device)
-            stances = batch["stance"].to(device).unsqueeze(1)
             extra_feats = batch["extra_feat"].to(device) if batch["extra_feat"].numel() > 0 else None
+
+            if is_binary:
+                stances = batch["stance"].to(device).unsqueeze(1).float()
+            else:
+                stances = batch["stance"].to(device).long()
 
             outputs = model(input_ids, attention_mask, extra_feats)
             loss = loss_fn(outputs, stances)
             eval_loss += loss.item()
 
-            preds = (torch.sigmoid(outputs) > 0.5).int().flatten()
+            if is_binary:
+                preds = (torch.sigmoid(outputs) > 0.5).int().flatten()
+                labels = stances.int().flatten()
+            else:
+                preds = torch.argmax(outputs, dim=1).flatten()
+                labels = stances.flatten()
+
             all_preds.extend(preds.cpu().numpy())
-            all_labels.extend(stances.int().flatten().cpu().numpy())
+            all_labels.extend(labels.cpu().numpy())
 
     avg_loss = eval_loss / len(data_loader)
-    f1 = f1_score(all_labels, all_preds, zero_division=0)
-    precision = precision_score(all_labels, all_preds, zero_division=0)
-    recall = recall_score(all_labels, all_preds, zero_division=0)
+    f1 = f1_score(all_labels, all_preds, zero_division=0, average='binary' if is_binary else 'macro')
+    precision = precision_score(all_labels, all_preds, zero_division=0, average='binary' if is_binary else 'macro')
+    recall = recall_score(all_labels, all_preds, zero_division=0, average='binary' if is_binary else 'macro')
 
     return avg_loss, f1, precision, recall, all_preds
 
-# Training function
 
-
+# -----------------------------
+# Training
+# -----------------------------
 def train_model(X_train, y_train, X_test, y_test,
                 batch_size=4, epochs=6, device="cpu",
                 model_name="bert-base-uncased", sample_level=False,
                 saved_model_path="trained_stance_model.pt"):
 
-    if isinstance(X_train, tuple) or isinstance(X_train, list):
+    if isinstance(X_train, (tuple, list)):
         texts_train, topics_train = X_train[0], X_train[1]
         feats_train = X_train[2] if len(X_train) > 2 else None
         texts_test, topics_test = X_test[0], X_test[1]
@@ -142,90 +157,80 @@ def train_model(X_train, y_train, X_test, y_test,
         texts_train = X_train["text"].tolist()
         topics_train = X_train["topic_id"].tolist()
         feats_train = X_train["nrc_feats"].tolist() if "nrc_feats" in X_train else None
-
         texts_test = X_test["text"].tolist()
         topics_test = X_test["topic_id"].tolist()
         feats_test = X_test["nrc_feats"].tolist() if "nrc_feats" in X_test else None
 
-    if hasattr(y_train, "tolist"):
-        y_train = y_train.tolist()
-    if hasattr(y_test, "tolist"):
-        y_test = y_test.tolist()
+    y_train = y_train.tolist() if hasattr(y_train, "tolist") else y_train
+    y_test = y_test.tolist() if hasattr(y_test, "tolist") else y_test
+
+    y_train_flat = list(chain.from_iterable(y_train)) if sample_level else y_train
+    unique_labels = sorted(set(y_train_flat))
+    num_classes = len(unique_labels)
+    is_binary = num_classes == 2 and sample_level
 
     extra_feat_dim = 0
     if feats_train is not None:
-        if sample_level:
-            first_sample = feats_train[0]
-            if isinstance(first_sample, (list, tuple)):
-                first_feat = first_sample[0]
-                if isinstance(first_feat, (list, tuple)):
-                    extra_feat_dim = len(first_feat)
-                else:
-                    extra_feat_dim = 1
-            else:
-                extra_feat_dim = 1
-        else:
-            first_feat = feats_train[0]
-            if isinstance(first_feat, (list, tuple)):
-                extra_feat_dim = len(first_feat)
-            else:
-                extra_feat_dim = 1
+        sample = feats_train[0][0] if sample_level else feats_train[0]
+        extra_feat_dim = len(sample) if isinstance(sample, (list, tuple)) else 1
 
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    
-    train_dataset = StanceDataset(texts_train, y_train, topics_train, tokenizer,
-                                  max_len=128, extra_feats=feats_train, sample_level=sample_level)
-    test_dataset = StanceDataset(texts_test, y_test, topics_test, tokenizer,
-                                 max_len=128, extra_feats=feats_test, sample_level=sample_level)
+
+    train_dataset = StanceDataset(texts_train, y_train, topics_train, tokenizer, 128,
+                                  extra_feats=feats_train, sample_level=sample_level)
+    test_dataset = StanceDataset(texts_test, y_test, topics_test, tokenizer, 128,
+                                 extra_feats=feats_test, sample_level=sample_level)
 
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size)
 
-    model = StanceClassifier(model_name=model_name, extra_feat_dim=extra_feat_dim).to(device)
+    model = StanceClassifier(model_name, extra_feat_dim, num_classes).to(device)
     optimizer = AdamW(model.parameters(), lr=2e-5)
-    loss_fn = nn.BCEWithLogitsLoss().to(device)
+    loss_fn = nn.BCEWithLogitsLoss() if is_binary else nn.CrossEntropyLoss()
 
-    history = {
-        'train_loss': [],
-        'test_loss': [],
-        'train_f1': [],
-        'test_f1': [],
-        'test_precision': [],
-        'test_recall': []
-    }
+    history = {'train_loss': [], 'test_loss': [], 'train_f1': [], 'test_f1': [], 'test_precision': [], 'test_recall': []}
 
     for epoch in range(epochs):
         model.train()
         total_loss = 0
-        all_train_preds = []
-        all_train_labels = []
+        all_train_preds, all_train_labels = [], []
 
         for batch in tqdm(train_loader, desc=f"Epoch {epoch+1}/{epochs}"):
             optimizer.zero_grad()
 
             input_ids = batch["input_ids"].to(device)
             attention_mask = batch["attention_mask"].to(device)
-            stances = batch["stance"].to(device).unsqueeze(1)
             extra_feats = batch["extra_feat"].to(device) if batch["extra_feat"].numel() > 0 else None
+
+            if is_binary:
+                stances = batch["stance"].to(device).unsqueeze(1).float()
+            else:
+                stances = batch["stance"].to(device).long()
 
             outputs = model(input_ids, attention_mask, extra_feats)
             loss = loss_fn(outputs, stances)
             total_loss += loss.item()
             loss.backward()
-            nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+            nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             optimizer.step()
 
-            # Train predictions for F1
             with torch.no_grad():
-                train_preds = (torch.sigmoid(outputs) > 0.5).int().flatten()
-                all_train_preds.extend(train_preds.cpu().numpy())
-                all_train_labels.extend(stances.int().flatten().cpu().numpy())
+                if is_binary:
+                    preds = (torch.sigmoid(outputs) > 0.5).int().flatten()
+                    labels = stances.int().flatten()
+                else:
+                    preds = torch.argmax(outputs, dim=1).flatten()
+                    labels = stances.flatten()
+
+                all_train_preds.extend(preds.cpu().numpy())
+                all_train_labels.extend(labels.cpu().numpy())
 
         avg_train_loss = total_loss / len(train_loader)
-        train_f1 = f1_score(all_train_labels, all_train_preds, zero_division=0)
+        train_f1 = f1_score(all_train_labels, all_train_preds, zero_division=0, average='binary' if is_binary else 'macro')
 
-        # Evaluate on test data
-        test_loss, test_f1, test_precision, test_recall, y_test_pred = evaluate_model(model, test_loader, device, loss_fn)
+        test_loss, test_f1, test_precision, test_recall, y_test_pred = evaluate_model(
+            model, test_loader, device, loss_fn, is_binary=is_binary
+        )
 
         history['train_loss'].append(avg_train_loss)
         history['test_loss'].append(test_loss)
@@ -234,14 +239,11 @@ def train_model(X_train, y_train, X_test, y_test,
         history['test_precision'].append(test_precision)
         history['test_recall'].append(test_recall)
 
-        print(f"Epoch {epoch + 1}/{epochs}")
-        print(f"Train loss: {avg_train_loss:.4f}")
-        print(f"Train F1: {train_f1:.4f}")
-        print(f"Test loss: {test_loss:.4f}")
-        print(f"Test F1: {test_f1:.4f}, Precision: {test_precision:.4f}, Recall: {test_recall:.4f}")
+        print(f"\nEpoch {epoch + 1}/{epochs}")
+        print(f"Train Loss: {avg_train_loss:.4f}, Train F1: {train_f1:.4f}")
+        print(f"Test Loss: {test_loss:.4f}, F1: {test_f1:.4f}, Precision: {test_precision:.4f}, Recall: {test_recall:.4f}")
         print("-" * 50)
 
     torch.save(model.state_dict(), saved_model_path)
     print(f"✅ Model saved to: {saved_model_path}")
-
     return model, history, y_test_pred
