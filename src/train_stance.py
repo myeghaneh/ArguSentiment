@@ -146,8 +146,11 @@ def evaluate_model(model, data_loader, device, loss_fn, is_binary=True):
 def train_model(X_train, y_train, X_test, y_test,
                 batch_size=4, epochs=6, device="cpu",
                 model_name="bert-base-uncased", sample_level=False,
-                saved_model_path="trained_stance_model.pt"):
+                is_binary=None, saved_model_path="trained_stance_model.pt"):
 
+    from itertools import chain
+
+    # -------- Prepare input data --------
     if isinstance(X_train, (tuple, list)):
         texts_train, topics_train = X_train[0], X_train[1]
         feats_train = X_train[2] if len(X_train) > 2 else None
@@ -156,18 +159,20 @@ def train_model(X_train, y_train, X_test, y_test,
     else:
         texts_train = X_train["text"].tolist()
         topics_train = X_train["topic_id"].tolist()
-        feats_train = X_train["nrc_feats"].tolist() if "nrc_feats" in X_train else None
+        feats_train = X_train.get("nrc_feats", None)
         texts_test = X_test["text"].tolist()
         topics_test = X_test["topic_id"].tolist()
-        feats_test = X_test["nrc_feats"].tolist() if "nrc_feats" in X_test else None
+        feats_test = X_test.get("nrc_feats", None)
 
     y_train = y_train.tolist() if hasattr(y_train, "tolist") else y_train
     y_test = y_test.tolist() if hasattr(y_test, "tolist") else y_test
 
+    # -------- Handle label format --------
     y_train_flat = list(chain.from_iterable(y_train)) if sample_level else y_train
     unique_labels = sorted(set(y_train_flat))
-    num_classes = len(unique_labels)
-    is_binary = num_classes == 2 and sample_level
+    if is_binary is None:
+        is_binary = len(unique_labels) == 2  # safer to set manually
+    num_classes = 1 if is_binary else len(unique_labels)
 
     extra_feat_dim = 0
     if feats_train is not None:
@@ -185,6 +190,9 @@ def train_model(X_train, y_train, X_test, y_test,
     test_loader = DataLoader(test_dataset, batch_size=batch_size)
 
     model = StanceClassifier(model_name, extra_feat_dim, num_classes).to(device)
+    print("Model architecture:")
+    print(model)
+
     optimizer = AdamW(model.parameters(), lr=2e-5)
     loss_fn = nn.BCEWithLogitsLoss() if is_binary else nn.CrossEntropyLoss()
 
@@ -197,7 +205,6 @@ def train_model(X_train, y_train, X_test, y_test,
 
         for batch in tqdm(train_loader, desc=f"Epoch {epoch+1}/{epochs}"):
             optimizer.zero_grad()
-
             input_ids = batch["input_ids"].to(device)
             attention_mask = batch["attention_mask"].to(device)
             extra_feats = batch["extra_feat"].to(device) if batch["extra_feat"].numel() > 0 else None
@@ -244,6 +251,22 @@ def train_model(X_train, y_train, X_test, y_test,
         print(f"Test Loss: {test_loss:.4f}, F1: {test_f1:.4f}, Precision: {test_precision:.4f}, Recall: {test_recall:.4f}")
         print("-" * 50)
 
-    torch.save(model.state_dict(), saved_model_path)
-    print(f"✅ Model saved to: {saved_model_path}")
+    # Save everything
+    save_dict = {
+        'model_state_dict': model.state_dict(),
+        'model_config': {
+            'model_name': model_name,
+            'extra_feat_dim': extra_feat_dim,
+            'num_classes': num_classes
+        },
+        'tokenizer_name': model_name,
+        'topic_vocab': train_dataset.topic_vocab,
+        'history': history,
+        'y_test': y_test,
+        'y_pred': y_test_pred
+    }
+
+    torch.save(save_dict, saved_model_path)
+    print(f"✅ Full model checkpoint saved to: {saved_model_path}")
+
     return model, history, y_test_pred
