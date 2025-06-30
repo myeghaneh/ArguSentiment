@@ -3,6 +3,7 @@ from typing import List, Tuple
 import pandas as pd
 import torch
 from nrclex import NRCLex
+from tqdm import tqdm
 
 from ExpandNRC.emotion_frequences import EmotionFrequencyCalculator
 from data_preprocess_stance import preprocess_data
@@ -43,8 +44,10 @@ def preprocess_with_expandnrc(df: pd.DataFrame, lexicon_path: str,
     evf = EmotionVectorFactory(lexicon_path,
                                device=device,
                                threshold=threshold)
-    for split in (X_tr, X_val):
-        split['expnrc_feats'] = split['text'].apply(evf.vector)
+    for split, name in zip((X_tr, X_val), ('train', 'val')):
+        desc = f"Computing ExpandNRC features ({name})"
+        # Use a list comprehension with tqdm to show progress
+        split['expnrc_feats'] = [evf.vector(text) for text in tqdm(split['text'], desc=desc)]
     return X_tr, X_val, y_tr, y_val
 
 
