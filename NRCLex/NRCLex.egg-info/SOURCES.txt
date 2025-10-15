@@ -1,0 +1,9 @@
+LICENSE
+README.md
+nrclex.py
+setup.py
+NRCLex.egg-info/PKG-INFO
+NRCLex.egg-info/SOURCES.txt
+NRCLex.egg-info/dependency_links.txt
+NRCLex.egg-info/requires.txt
+NRCLex.egg-info/top_level.txt

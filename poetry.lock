@@ -2507,19 +2507,21 @@ jupyter-server = ">=1.8,<3"
 test = ["pytest", "pytest-console-scripts", "pytest-jupyter", "pytest-tornasync"]
 
 [[package]]
-name = "nrclex"
-version = "3.0.0"
+name = "NRCLex"
+version = "4.0"
 description = "An affect generator based on TextBlob and the NRC affect lexicon.  Note that lexicon license is for research purposes only."
 optional = false
 python-versions = ">=2.7"
 groups = ["main"]
-files = [
-    {file = "NRCLex-3.0.0-py2-none-any.whl", hash = "sha256:3e6fa99f1f2293b31a9bfbaf56f87ad9a241abeac13ea2a88e135a41ed3faadf"},
-    {file = "NRCLex-3.0.0.tar.gz", hash = "sha256:a4ae80e2b50a1404d6dcf3273b4388d7a3811c20c6c7afa1f91768b2b3cc8fa3"},
-]
+files = []
+develop = false
 
 [package.dependencies]
 textblob = "*"
+
+[package.source]
+type = "directory"
+url = "NRCLex"
 
 [[package]]
 name = "numpy"
@@ -5366,4 +5368,4 @@ url = "https://github.com/explosion/spacy-models/releases/download/zh_core_web_t
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.13"
-content-hash = "2cc1dbf5136d68db38dbbd1324fb0117385a153dabff5e9387a298b2faac02e6"
+content-hash = "a911e0f1a444a010b97fbcb6f0e60ef1e03e511eff184ac8531ee1f544af7c1b"
